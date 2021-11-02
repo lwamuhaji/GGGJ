@@ -34,7 +34,7 @@ class GServerThread(threading.Thread):
                 print('error on recv:', e)
                 break
             else:
-                print(recv_data.decode(self.server.encoding_format))
+                print(str(self.client_address[0]) + ': ' + recv_data.decode(self.server.encoding_format))
 
     def send(self, data: str) -> int:
         try:

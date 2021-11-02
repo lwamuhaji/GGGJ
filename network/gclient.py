@@ -1,6 +1,5 @@
 import socket
 
-
 class GClient:
 
     def __init__(self, SRC_ADDRESS='0.0.0.0', SRC_PORT=33791, DEST_ADDRESS='218.55.184.192', DEST_PORT=33791) -> None:
@@ -21,9 +20,12 @@ class GClient:
 
     def send(self, **kwargs):
         try:
-            self.clientSock.sendall(kwargs['text'].encode())
+            self.clientSock.sendall(kwargs.encode())
         except Exception as e:
             print(e)
             return 1
         else:
             return 0
+
+    def close(self):
+        self.clientSock.close()

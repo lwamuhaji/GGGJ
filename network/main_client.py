@@ -1,5 +1,12 @@
-from socket import *
+from gclient import GClient
 
-clientSock = socket(AF_INET, SOCK_STREAM)
-clientSock.bind(('0.0.0.0', 33791))
-clientSock.connect(('218.55.184.192', 33791))
+client = GClient()
+if client.connect() == 0:
+    while True:
+        text = input('>')
+
+        if text == 'quit':
+            break
+        client.send(text=text)
+
+client.close()
