@@ -1,10 +1,11 @@
 import threading
+import pickle
 
 class GServerThread(threading.Thread):
     
     def __init__(self, server) -> None:
         super().__init__()
-        from gserver import GServer
+        from gnetwork.gserver import GServer
         self.server: GServer = server
 
     def run(self) -> None:
@@ -30,11 +31,13 @@ class GServerThread(threading.Thread):
         while True:
             try:
                 recv_data = self.client_socket.recv(self.server.buffer_size)
+                data = pickle.loads(recv_data)
             except Exception as e:
                 print('error on recv:', e)
                 break
             else:
-                print(str(self.client_address[0]) + ': ' + recv_data.decode(self.server.encoding_format))
+                print(data['pos'])
+                #print(str(self.client_address[0]) + ': ' + data['text'])
 
     def send(self, data: str) -> int:
         try:
@@ -46,3 +49,6 @@ class GServerThread(threading.Thread):
             return 1
         else:
             return 0
+
+    def log(self, *args):
+        print(self.client_address, args)

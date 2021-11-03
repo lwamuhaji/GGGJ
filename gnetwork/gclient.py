@@ -1,4 +1,5 @@
 import socket
+import pickle
 
 class GClient:
 
@@ -6,6 +7,7 @@ class GClient:
         self.SRC_ADDRESS, self.SRC_PORT = SRC_ADDRESS, SRC_PORT
         self.DEST_ADDRESS, self.DEST_PORT = DEST_ADDRESS, DEST_PORT
         self.clientSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.clientSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         
     def connect(self):
         try:
@@ -20,7 +22,8 @@ class GClient:
 
     def send(self, **kwargs):
         try:
-            self.clientSock.sendall(kwargs.encode())
+            data = pickle.dumps(kwargs)
+            self.clientSock.sendall(data)
         except Exception as e:
             print(e)
             return 1

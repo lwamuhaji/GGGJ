@@ -1,6 +1,6 @@
 import socket
 from typing import List
-import gserverthread
+import gnetwork.gserverthread as gserverthread
 
 class GServer:
 
