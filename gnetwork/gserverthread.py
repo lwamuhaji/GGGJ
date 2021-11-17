@@ -31,13 +31,16 @@ class GServerThread(threading.Thread):
         while True:
             try:
                 recv_data = self.client_socket.recv(self.server.buffer_size)
-                data = pickle.loads(recv_data)
             except Exception as e:
                 print('error on recv:', e)
                 break
             else:
-                print(data['pos'])
-                #print(str(self.client_address[0]) + ': ' + data['text'])
+                self.__handleData(recv_data)
+
+    def __handleData(self, recv_data: bytes):
+        data: dict = pickle.loads(recv_data)
+        if data['header'] == 'movement':
+            print(data['position'])
 
     def send(self, data: str) -> int:
         try:

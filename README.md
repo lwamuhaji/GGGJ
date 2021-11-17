@@ -20,16 +20,16 @@ import gnetwork.gclient as gclient
 client = gclient.GClient()
 client.connect()
 ```
-
+  
 - 서버에 데이터 전송
 ```python
 client.send(data=data)
 ```
 
-### data format
+### data format 
 - 움직임
 ```python
-client.send(header='move', position=rect: Rect)
+client.send(header='movement', position=rect: Rect)
 ```
 
 - 점수
