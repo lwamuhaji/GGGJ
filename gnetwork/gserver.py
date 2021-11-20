@@ -1,6 +1,5 @@
 import socket
 import pickle
-import threading
 from . import gthread
 from . import gdecorator
 
@@ -15,22 +14,14 @@ class GServer:
         self.encoding_format: str = encoding_format
         self.maxQueue: int = maxQueue
 
-    def receive(self):
-        while True:
-            data: bytes = self.client_socket.recv(self.buffer_size)
-            self.__handleData(data)
-
-    def __handleData(self, data: bytes):
-        data_dict: dict = pickle.loads(data)
-        print(data_dict)
-
     def start(self) -> None:
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(self.maxQueue)
         self.accept()
+        self.startRecvThread()
 
     def startRecvThread(self):
-        threading.Thread(target=self.receive, daemon=True).start()
+        gthread.ReceiveThread(self).start()
 
     @gdecorator.AcceptDecorator()
     def accept(self):

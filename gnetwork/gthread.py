@@ -15,12 +15,19 @@ class AcceptThread(threading.Thread):
         print('Client connected: {}'.format(self.client_address))
 
 class ReceiveThread(threading.Thread):
-    def __init__(self) -> None:
-        super.__init__()
+    def __init__(self, intent, daemon=True) -> None:
+        super().__init__()
+        from .gserver import GServer
+        self.intent: GServer = intent
 
     def run(self) -> None:
-        
+        while True:
+            data: bytes = self.intent.client_socket.recv(self.intent.buffer_size)
+            self.__handleData(data)
 
+    def __handleData(self, data: bytes):
+        data_dict: dict = pickle.loads(data)
+        print(data_dict)
         
 class GServerThread(threading.Thread):
     
