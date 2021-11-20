@@ -1,6 +1,27 @@
 import threading
 import pickle
 
+class AcceptThread(threading.Thread):
+    def __init__(self, server) -> None:
+        super().__init__()
+        self.setServer(server)
+
+    def setServer(self, server):
+        from . import gserver
+        self.server: gserver.GServer = server
+
+    def run(self) -> None:
+        self.client_socket, self.client_address = self.server.server_socket.accept()
+        print('Client connected: {}'.format(self.client_address))
+
+class ReceiveThread(threading.Thread):
+    def __init__(self) -> None:
+        super.__init__()
+
+    def run(self) -> None:
+        
+
+        
 class GServerThread(threading.Thread):
     
     def __init__(self, server) -> None:
@@ -9,13 +30,8 @@ class GServerThread(threading.Thread):
         self.server: GServer = server
 
     def run(self) -> None:
-        try:
-            self.client_socket, self.client_address = self.server.server_socket.accept()
-        except Exception as e:
-            print('accept failed:', e)
-            self.server.server_socket.close()
-        else:
-            self.__onAccepted()
+        self.client_socket, self.client_address = self.server.server_socket.accept()
+        self.__onAccepted()
 
     def __onAccepted(self) -> None:
         self.server.startNewThread()

@@ -12,32 +12,14 @@ class GClient:
         self.buffer_size = buff_size
         
     def connect(self):
-        try:
-            self.client_socket.bind((self.SRC_ADDRESS, self.SRC_PORT))
-            self.client_socket.connect((self.DEST_ADDRESS, self.DEST_PORT))
-        except Exception as e:
-            print(e)
-            self.client_socket.close()
-            return 1
-        else:
-            self.__onConnected()
-            return 0
+        self.client_socket.bind((self.SRC_ADDRESS, self.SRC_PORT))
+        self.client_socket.connect((self.DEST_ADDRESS, self.DEST_PORT))
 
-    def __onConnected(self):
-        receivingThread = threading.Thread(target=self.__recv)
-        receivingThread.daemon = True
-        receivingThread.start()
+    def startRecvThread(self):
+        threading.Thread(target=self.receive, daemon=True).start()
 
-    def __recv(self):
-        while True:
-            try:
-                recv_data = self.client_socket.recv(self.buffer_size)
-            except Exception as e:
-                print('error on recv:', e)
-                break
-            else:
-                continue
-                self.__handleData(recv_data)
+    def receive(self):
+        ...
 
     def __handleData(self, recv_data):
         data: dict = pickle.loads(recv_data)
