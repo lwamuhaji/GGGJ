@@ -1,6 +1,7 @@
 import pygame
 from pygame.rect import *
 
+    
 def eventProcess():
     for event in pygame.event.get():
         if event.type == pygame.QUIT: #유저가 닫기 누르면 꺼짐
@@ -10,13 +11,13 @@ def eventProcess():
                 pygame.quit()
 
             if event.key == pygame.K_w:
-                move.y = -10
+                move.y = -1
             if event.key == pygame.K_s:
-                move.y = 10
+                move.y = 1
             if event.key == pygame.K_a:
-                move.x = -10
+                move.x = -1
             if event.key == pygame.K_d:
-                move.x = 10
+                move.x = 1
 
         if event.type == pygame.KEYUP:  #키에서 손때면 멈춤
             if event.key == pygame.K_w:
@@ -46,6 +47,7 @@ def movePlayer1():
         
 
     screen.blit(Player1, recP1)
+    
 #쓰이는 색 정리
 BLACK= ( 0,  0,  0)
 WHITE= (255,255,255)
@@ -66,7 +68,7 @@ screen = pygame.display.set_mode((SCRREN_WIDTH, SCRREN_HEIGHT))
 pygame.display.set_caption('Game Title')
 
 #플레이어 1 생성
-Player1 = pygame.image.load(r'C:\Users\lwamu\OneDrive\문서\카카오톡 받은 파일\방향키\Player1.png')
+Player1 = pygame.image.load('resources\Player1.png')
 Player1 = pygame.transform.scale(Player1,(150,150))
 recP1 = Player1.get_rect()
 recP1.centerx = (SCRREN_WIDTH/2)
@@ -75,11 +77,11 @@ recP1.centery = (SCRREN_HEIGHT/2)
 #메인 이벤트 루프
 while done:
     #화면 지움
-    screen.fill(BLACK)  
+    screen.fill(WHITE)  
     #이벤트 처리
     eventProcess()
     #플레이어 1 이동
     movePlayer1()
     #화면 갱신
     pygame.display.flip()
-    clock.tick(100)
+    clock.tick(300)
