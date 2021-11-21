@@ -1,6 +1,7 @@
 import socket
 import pickle
-import threading
+from . import gthread
+from . import gdecorator
 
 class GClient:
 
@@ -10,32 +11,18 @@ class GClient:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.buffer_size = buff_size
-        
+
+    def startRecvThread(self):
+        gthread.ReceiveThread(self).start()
+
+    @gdecorator.ConnectDecorator()
     def connect(self):
         self.client_socket.bind((self.SRC_ADDRESS, self.SRC_PORT))
         self.client_socket.connect((self.DEST_ADDRESS, self.DEST_PORT))
 
-    def startRecvThread(self):
-        threading.Thread(target=self.receive, daemon=True).start()
-
-    def receive(self):
-        ...
-
-    def __handleData(self, recv_data):
-        data: dict = pickle.loads(recv_data)
-        if data['header'] == 'movement':
-            print(data['position'])
-
-
+    @gdecorator.SendDecorator()
     def send(self, **kwargs):
-        try:
-            data = pickle.dumps(kwargs)
-            self.client_socket.sendall(data)
-        except Exception as e:
-            print(e)
-            return 1
-        else:
-            return 0
+        self.client_socket.sendall(pickle.dumps(kwargs))
 
     def close(self):
         self.client_socket.close()

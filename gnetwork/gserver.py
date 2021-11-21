@@ -18,7 +18,6 @@ class GServer:
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(self.maxQueue)
         self.accept()
-        self.startRecvThread()
 
     def startRecvThread(self):
         gthread.ReceiveThread(self).start()
