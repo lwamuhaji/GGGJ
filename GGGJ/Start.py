@@ -11,7 +11,6 @@ class Game:
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pg.display.set_caption('Game Title')
         self.clock = pg.time.Clock()
-        self.time = pg.time.get_ticks()
         self.running = True
     
     def new(self):
@@ -36,15 +35,16 @@ class Game:
         self.playerSprite.add(self.player1, self.player2)
         
         self.run()
-    
+    #게임 실행 부분 코드
     def run(self):
+        self.time = pg.time.get_ticks()
         self.playing = True
         while self.playing:
             self.clock.tick(60)
             self.events()
             self.update()
             self.draw()
-    
+    #키 이벤트
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT: #유저가 닫기 누르면 꺼짐
@@ -89,7 +89,7 @@ class Game:
                     self.player2.dy = 0
                 if event.key == pg.K_UP:
                     self.player2.dy = 0
-        
+    #매 프레임 갱신해야하는 것들    
     def update(self):
         self.allSprite.update()
         self.player1.move()
@@ -105,7 +105,7 @@ class Game:
             self.allSprite.add(self.coin)
             self.coinSprite.add(self.coin)
             
-        
+    #화면에 출력    
     def draw(self):
         self.screen.fill(BLACK)
         self.allSprite.draw(self.screen)
@@ -113,13 +113,15 @@ class Game:
         self.drawScore()
         pg.display.flip()
         
- # 3분 타이머
+     #타이머
     def timer(self):
         elapsed_time = (pg.time.get_ticks() - self.time) / 1000   
         self.drawText("timer: " + str(int(total_time - elapsed_time)), 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/12)
         if total_time - elapsed_time <= 0:
+            elapsed_time = 0
             self.showEnd()
-
+            
+    #
     def wait_for_key(self):
         waiting = True
         while waiting:
@@ -154,6 +156,8 @@ class Game:
         
         self.drawText("Press a key to play again", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6*5)
         pg.display.flip()
+        self.score1 = 0
+        self.score2 = 0
         self.wait_for_key()
     
     def drawScore(self):
@@ -171,9 +175,9 @@ class Game:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
 
-s = startManager()
-
 g = Game()
+g.showStartScreen()
+
 while g.running:
     g.new()
     g.showEnd()
