@@ -1,20 +1,27 @@
-from os import X_OK, link
-import sys
+if __name__ == '__main__':
+    import sys
+    from os import path
+    print(path.dirname( path.dirname( path.abspath(__file__) ) ))
+    sys.path.append(path.dirname( path.dirname( path.abspath(__file__) ) ))
+
 import pygame as pg
 import random
-import time
 
+from pygame import color
+from gnetwork import gclient
+from gnetwork import gserver
 
 # 게임 화면 크기
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 960
 
 #쓰이는 색 정리
-BLACK= ( 0,  0,  0)
-WHITE= (255,255,255)
-BLUE = ( 0,  0,255)
-GREEN= ( 0,255,  0)
-RED  = (255,  0,  0)
+class Color:
+    BLACK= ( 0,  0,  0)
+    WHITE= (255,255,255)
+    BLUE = ( 0,  0,255)
+    GREEN= ( 0,255,  0)
+    RED  = (255,  0,  0)
 
 # 기본 변수
 COIN_COUNT = 5
@@ -67,6 +74,7 @@ class Player:
             self.rect.x -= self.dx
         if self.rect.bottom > SCREEN_HEIGHT or self.rect.y < 0:
             self.rect.y -= self.dy
+
     def checkCollision(self, Coin, distance = 0):
         if (self.rect.top + distance < Coin.rect.bottom) and (Coin.rect.top < self.rect.bottom - distance) and (self.rect.left + distance < Coin.rect.right) and (Coin.rect.left < self.rect.right - distance):
             return True
@@ -112,7 +120,7 @@ class Coin:
         else:
             return False
  
- # 3분 타이머
+# 3분 타이머
 def timer():
     font = pg.font.SysFont("FixedSsy", 30, True, False)
     elapsed_time = (pg.time.get_ticks() - start_ticks) / 1000   
@@ -132,8 +140,7 @@ def wait_for_key():
                 if event.key == pg.K_ESCAPE: #ESC누르면 꺼짐
                     pg.quit()
             if event.type == pg.KEYUP:
-                waiting = False
-            
+                waiting = False        
 
 def showStartScreen():
     font = pg.font.SysFont("FixedSsy", 30, True, False)
@@ -165,7 +172,6 @@ def showEnd():
     pg.display.flip()
     
     wait_for_key()
-        
  
 def draw_score():
     # SCORE 기록
@@ -175,7 +181,6 @@ def draw_score():
     text_score2 = font.render("2P score : " + str(SCORE2), True, WHITE)
     SCREEN.blit(text_score1, [SCREEN_WIDTH/16, SCREEN_HEIGHT/12])
     SCREEN.blit(text_score2, [SCREEN_WIDTH/6*5, SCREEN_HEIGHT/12])
- 
  
 def main():
     # pygame 초기화 및 스크린 생성
@@ -207,12 +212,16 @@ def main():
                 #1P 움직임
                 if event.key == pg.K_d:
                     player1.dx = SPEED1
+                    client.send(move='right')
                 if event.key == pg.K_a:
                     player1.dx = -SPEED1
+                    client.send(move='left')
                 if event.key == pg.K_s:
                     player1.dy = SPEED1
+                    client.send(move='down')
                 if event.key == pg.K_w:
                     player1.dy = -SPEED1
+                    client.send(move='up')
                 #2P 움직임
                 if event.key == pg.K_RIGHT:
                     player2.dx = SPEED2
@@ -266,5 +275,16 @@ def main():
         # 초당 프레임 설정
         clock.tick(60)
 
+def asClient():
+    global client
+    client = gclient.GClient()
+    client.connect()
+
+def asServer():
+    global client
+    client = gserver.GServer()
+    
+
 if __name__ == '__main__':
+    asClient()
     main()
