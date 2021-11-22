@@ -11,6 +11,7 @@ class Game:
         pg.display.set_caption('Game Title')
         self.clock = pg.time.Clock()
         self.running = True
+        self.online = False
     #게임을 시작할 때 필요한 것들
     def new(self):
         self.score1 = 0
@@ -48,8 +49,6 @@ class Game:
             if event.type == pg.QUIT: #유저가 닫기 누르면 꺼짐
                 pg.quit()
             if event.type == pg.KEYDOWN:  #누르고 있는 동안 움직임
-                if event.key == pg.K_ESCAPE: #ESC누르면 꺼짐
-                    pg.quit()
                 #1P 움직임
                 if event.key == pg.K_d:
                     self.player1.dx = SPEED1
@@ -90,12 +89,12 @@ class Game:
     #매 프레임 갱신해야하는 것들    
     def update(self):
         self.allSprite.update()
+        #플레이어 이동
         self.player1.move()
         self.player2.move()
         #운석 이동
         for rock in self.rockSprite:
-            rock.rect.x += rock.dx
-            rock.rect.y += rock.dy
+            rock.moveRock()
             if rock.rect.top >= SCREEN_HEIGHT:
                 rock.kill()
         #코인 충돌 감지
@@ -136,22 +135,48 @@ class Game:
     def wait_for_key(self):
         waiting = True
         while waiting:
-            waiting = True
             self.clock.tick(60)
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                 if event.type == pg.KEYUP:
-                    waiting = False
-                    self.time = pg.time.get_ticks()
+                    if event.key == pg.K_SPACE:
+                        waiting = False
+                        self.showCheckScreen()
+                        self.time = pg.time.get_ticks()
+    #로컬 멀티인지 온라인인지 확인
+    def isOnline(self):
+        checking = True
+        while checking:
+            self.clock.tick(60)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                if event.type == pg.KEYUP:
+                    if event.key == pg.K_y:
+                        checking = False
+                        self.online = True
+                    if event.key == pg.K_n:
+                        checking = False
+                        self.online = False
+                
     #시작화면 출력
     def showStartScreen(self):
         self.screen.fill(BLACK)
-        self.drawBg()
+        self.drawBg("resources\\background.jpg")
         self.drawText("Game Title", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6)
-        self.drawText("Press a key to play", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6*5)
+        self.drawText("Press 'spacebar' to play", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6*5)
         pg.display.flip()
         self.wait_for_key()
+    #로컬 멀티 / 온라인 확인 화면 출력
+    def showCheckScreen(self):
+        self.screen.fill(BLACK)
+        self.drawImage("resources\Online.png", (300,300), SCREEN_WIDTH/4, SCREEN_HEIGHT/4)
+        self.drawImage("resources\Local.png", (300,300), SCREEN_WIDTH/4*3, SCREEN_HEIGHT/4)
+        self.drawText("Online 2p play press 'y'", 30, WHITE, SCREEN_WIDTH/4, SCREEN_HEIGHT/6*5)
+        self.drawText("Local 2p play press 'n'", 30, WHITE, SCREEN_WIDTH/4*3, SCREEN_HEIGHT/6*5)
+        pg.display.flip()
+        self.isOnline()
     #결과창 출력
     def showEnd(self):
         self.screen.fill(BLACK)
@@ -164,7 +189,7 @@ class Game:
             self.drawText("draw...", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
         else:
             self.drawText("2P WIN!", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
-        self.drawText("Press a key to play again", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6*5)
+        self.drawText("Press 'spacebar' to play again", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6*5)
         
         pg.display.flip()
         self.reset()
@@ -173,24 +198,35 @@ class Game:
     def reset(self):
         self.score1 = 0
         self.score2 = 0
+        self.player1.dx = 0
+        self.player1.dy = 0
+        self.player2.dx = 0
+        self.player2.dy = 0
         self.player1.rect.midtop = (SCREEN_WIDTH/20, SCREEN_HEIGHT/2)
         self.player2.rect.midtop = (SCREEN_WIDTH/20*19, SCREEN_HEIGHT/2)
     #점수 출력
     def drawScore(self):
         self.drawText("1P score : " + str(self.score1), 30 ,WHITE, SCREEN_WIDTH/12, SCREEN_WIDTH/12)
         self.drawText("2P score : " + str(self.score2), 30 ,WHITE, SCREEN_WIDTH/12*11, SCREEN_WIDTH/12)
+    #이미지 출력
+    def drawImage(self, path, size, x, y):
+        image = pg.image.load(path)
+        image = pg.transform.scale(image, size)
+        imageRect = image.get_rect()
+        imageRect.midtop = (x, y)
+        self.screen.blit(image, imageRect)
     #배경 출력
-    def drawBg(self):
-        background = pg.image.load("resources\\background.jpg")
+    def drawBg(self, path):
+        background = pg.image.load(path)
         backgroundRect = background.get_rect()
         self.screen.blit(background, backgroundRect)
     #텍스트 출력
     def drawText(self, text, size, color, x, y):
         font = pg.font.Font("resources\\andante.ttf", size)
-        text_surface = font.render(text, True, color)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (x, y)
-        self.screen.blit(text_surface, text_rect)
+        textSurface = font.render(text, True, color)
+        textRect = textSurface.get_rect()
+        textRect.midtop = (x, y)
+        self.screen.blit(textSurface, textRect)
 
 g = Game()
 g.showStartScreen()
