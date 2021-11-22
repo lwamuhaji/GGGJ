@@ -1,5 +1,6 @@
 from os import X_OK, link
 import pygame as pg
+import time
 from tkinter import *
 from Setting import *
 from Class import *
@@ -11,11 +12,15 @@ class Game:
         pg.display.set_caption('Game Title')
         self.clock = pg.time.Clock()
         self.running = True
+        self.bgmusic = pg.mixer.Sound("resources\\bgmusic.mp3")
         self.online = False
+        self.bgmusic.play(-1)
     #게임을 시작할 때 필요한 것들
     def new(self):
         self.score1 = 0
         self.score2 = 0
+        self.coinsound = pg.mixer.Sound("resources\coinGet.mp3")
+        self.hitsound = pg.mixer.Sound("resources\hit.mp3")
         self.allSprite = pg.sprite.Group()
         self.playerSprite = pg.sprite.Group()
         self.coinSprite = pg.sprite.Group()
@@ -34,6 +39,7 @@ class Game:
         self.allSprite.add(self.player1, self.player2)
         self.playerSprite.add(self.player1, self.player2)
         
+        self.startCountdown()
         self.run()
     #게임 실행 부분 코드
     def run(self):
@@ -100,13 +106,17 @@ class Game:
         #코인 충돌 감지
         if pg.sprite.spritecollide(self.player1, self.coinSprite, True):
             self.score1 += 10
+            self.coinsound.play()
         if pg.sprite.spritecollide(self.player2, self.coinSprite, True):
             self.score2 += 10
+            self.coinsound.play()
         #운석 충돌 감지
         if pg.sprite.spritecollide(self.player1, self.rockSprite, True):
             self.score1 -= 10
+            self.hitsound.play()
         if pg.sprite.spritecollide(self.player2, self.rockSprite, True):
             self.score2 -= 10
+            self.hitsound.play()
         #코인 재성성
         while len(self.coinSprite) < 5:
             coin = Coin()
@@ -127,10 +137,9 @@ class Game:
     #타이머
     def timer(self):
         elapsed_time = (pg.time.get_ticks() - self.time) / 1000   
-        self.drawText("timer: " + str(int(total_time - elapsed_time)), 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/12)
+        self.drawText("time: " + str(int(total_time - elapsed_time)), 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/12)
         if total_time - elapsed_time <= 0:
-            self.time = 0
-            self.showEnd()
+            self.playing = False
     #시작화면과 결과창에서 키입력 감지
     def wait_for_key(self):
         waiting = True
@@ -143,7 +152,6 @@ class Game:
                     if event.key == pg.K_SPACE:
                         waiting = False
                         self.showCheckScreen()
-                        self.time = pg.time.get_ticks()
     #로컬 멀티인지 온라인인지 확인
     def isOnline(self):
         checking = True
@@ -159,7 +167,16 @@ class Game:
                     if event.key == pg.K_n:
                         checking = False
                         self.online = False
-                
+    #게임 시작 카운트 다운
+    def startCountdown(self):
+        sec = 3
+        while sec:
+            self.screen.fill(BLACK)
+            self.drawText(str(sec), 50, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+            pg.display.flip()
+            time.sleep(1)
+            sec -= 1
+        self.time = pg.time.get_ticks()
     #시작화면 출력
     def showStartScreen(self):
         self.screen.fill(BLACK)
@@ -196,6 +213,7 @@ class Game:
         self.wait_for_key()
     #재시작시 리셋    
     def reset(self):
+        self.time = 0
         self.score1 = 0
         self.score2 = 0
         self.player1.dx = 0
