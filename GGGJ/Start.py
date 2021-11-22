@@ -4,7 +4,6 @@ from tkinter import *
 from Setting import *
 from Class import *
 
-
 class Game:
     def __init__(self):
         pg.init()
@@ -12,7 +11,7 @@ class Game:
         pg.display.set_caption('Game Title')
         self.clock = pg.time.Clock()
         self.running = True
-    
+    #게임을 시작할 때 필요한 것들
     def new(self):
         self.score1 = 0
         self.score2 = 0
@@ -22,7 +21,7 @@ class Game:
         self.rockSprite = pg.sprite.Group()
         self.player1 = Player(self, 'resources\Player1.png', SCREEN_WIDTH/20, SCREEN_HEIGHT/2)
         self.player2 = Player(self, 'resources\Player2.png', SCREEN_WIDTH/20*19, SCREEN_HEIGHT/2)
-        
+        #스프라이트 그룹 형성
         for i in range(COIN_COUNT):
             self.coin = Coin()
             self.allSprite.add(self.coin)
@@ -37,7 +36,6 @@ class Game:
         self.run()
     #게임 실행 부분 코드
     def run(self):
-        self.time = pg.time.get_ticks()
         self.playing = True
         while self.playing:
             self.clock.tick(60)
@@ -94,17 +92,32 @@ class Game:
         self.allSprite.update()
         self.player1.move()
         self.player2.move()
-    
+        #운석 이동
+        for rock in self.rockSprite:
+            rock.rect.x += rock.dx
+            rock.rect.y += rock.dy
+            if rock.rect.top >= SCREEN_HEIGHT:
+                rock.kill()
+        #코인 충돌 감지
         if pg.sprite.spritecollide(self.player1, self.coinSprite, True):
             self.score1 += 10
         if pg.sprite.spritecollide(self.player2, self.coinSprite, True):
             self.score2 += 10
-        
+        #운석 충돌 감지
+        if pg.sprite.spritecollide(self.player1, self.rockSprite, True):
+            self.score1 -= 10
+        if pg.sprite.spritecollide(self.player2, self.rockSprite, True):
+            self.score2 -= 10
+        #코인 재성성
         while len(self.coinSprite) < 5:
-            self.coin = Coin()
-            self.allSprite.add(self.coin)
-            self.coinSprite.add(self.coin)
-            
+            coin = Coin()
+            self.allSprite.add(coin)
+            self.coinSprite.add(coin)  
+        #운석 재성성
+        while len(self.rockSprite) < 5:
+            rock = Items(self)
+            self.allSprite.add(rock)
+            self.rockSprite.add(rock)
     #화면에 출력    
     def draw(self):
         self.screen.fill(BLACK)
@@ -112,16 +125,14 @@ class Game:
         self.timer()
         self.drawScore()
         pg.display.flip()
-        
-     #타이머
+    #타이머
     def timer(self):
         elapsed_time = (pg.time.get_ticks() - self.time) / 1000   
         self.drawText("timer: " + str(int(total_time - elapsed_time)), 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/12)
         if total_time - elapsed_time <= 0:
-            elapsed_time = 0
+            self.time = 0
             self.showEnd()
-            
-    #
+    #시작화면과 결과창에서 키입력 감지
     def wait_for_key(self):
         waiting = True
         while waiting:
@@ -132,20 +143,20 @@ class Game:
                     pg.quit()
                 if event.type == pg.KEYUP:
                     waiting = False
-                
+                    self.time = pg.time.get_ticks()
+    #시작화면 출력
     def showStartScreen(self):
         self.screen.fill(BLACK)
+        self.drawBg()
         self.drawText("Game Title", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6)
         self.drawText("Press a key to play", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6*5)
         pg.display.flip()
         self.wait_for_key()
-
+    #결과창 출력
     def showEnd(self):
-        font = pg.font.SysFont("FixedSsy", 30, True, False)
         self.screen.fill(BLACK)
         if not isActive:
             return
-        text_over = font.render("Game End", True, WHITE)
         self.drawText("Game End", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6)
         if self.score1 > self.score2:
             self.drawText("1P WIN!", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
@@ -153,21 +164,27 @@ class Game:
             self.drawText("draw...", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
         else:
             self.drawText("2P WIN!", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
-        
         self.drawText("Press a key to play again", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6*5)
+        
         pg.display.flip()
+        self.reset()
+        self.wait_for_key()
+    #재시작시 리셋    
+    def reset(self):
         self.score1 = 0
         self.score2 = 0
-        self.wait_for_key()
-    
+        self.player1.rect.midtop = (SCREEN_WIDTH/20, SCREEN_HEIGHT/2)
+        self.player2.rect.midtop = (SCREEN_WIDTH/20*19, SCREEN_HEIGHT/2)
+    #점수 출력
     def drawScore(self):
-        global SCORE1, SCORE2
-        font = pg.font.SysFont("FixedSsy", 30, True, False)
-        text_score1 = font.render("1P score : " + str(self.score1), True, WHITE)
-        text_score2 = font.render("2P score : " + str(self.score2), True, WHITE)
-        self.drawText("1P score : " + str(self.score1), 30 ,WHITE, SCREEN_WIDTH/16, SCREEN_WIDTH/12)
-        self.drawText("2P score : " + str(self.score2), 30 ,WHITE, SCREEN_WIDTH/16*15, SCREEN_WIDTH/12)
-
+        self.drawText("1P score : " + str(self.score1), 30 ,WHITE, SCREEN_WIDTH/12, SCREEN_WIDTH/12)
+        self.drawText("2P score : " + str(self.score2), 30 ,WHITE, SCREEN_WIDTH/12*11, SCREEN_WIDTH/12)
+    #배경 출력
+    def drawBg(self):
+        background = pg.image.load("resources\\background.jpg")
+        backgroundRect = background.get_rect()
+        self.screen.blit(background, backgroundRect)
+    #텍스트 출력
     def drawText(self, text, size, color, x, y):
         font = pg.font.Font("resources\\andante.ttf", size)
         text_surface = font.render(text, True, color)

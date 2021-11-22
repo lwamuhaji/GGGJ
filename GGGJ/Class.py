@@ -43,8 +43,14 @@ class Items(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.image = pg.image.load('resources\\rock.png')
-        self.image = pg.transform.scale(self.image,(100,100))
+        self.image = pg.transform.scale(self.image,(75,75))
         self.rect = self.image.get_rect()
+        self.dx = random.randrange(-2, 2)
+        self.dy = random.randrange(3, 7)
         self.rect.x = random.randrange(SCREEN_WIDTH/5, SCREEN_WIDTH/5*4)
         self.rect.y = random.randrange(-150, -50)
+    
+    def moveRock(self):
+        self.rect.x += self.dx
+        self.rect.y += self.dy
         
