@@ -253,5 +253,4 @@ while g.running:
     g.new()
     g.showEnd()
 
-
 pg.quit()

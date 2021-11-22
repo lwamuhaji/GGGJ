@@ -1,15 +1,17 @@
-import socket
-from gclient import GClient
-import sys
+if __name__ == '__main__':
+    if __package__ is None:
+        print(1)
+        import sys
+        from os import path
+        print(path.dirname( path.dirname( path.abspath(__file__) ) ))
+        sys.path.append(path.dirname( path.dirname( path.abspath(__file__) ) ))
+        from gclient import GClient
 
-client = GClient()
-if client.connect() == 0:
-    while True:
-        text = input('> ')
+print(__name__)
+print(__package__)
+#client = GClient()
+#client.connect()
+#print("Connected to Server")
 
-        if text == 'quit':
-            sys.exit()
-            client.clientSock.shutdown(socket.SHUT_WR)
-            client.close()
-            break
-        client.send(text=text)
+#while True:
+#    client.send(text=input('>'))
