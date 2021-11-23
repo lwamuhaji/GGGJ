@@ -24,12 +24,12 @@ class GClient:
     def send(self, **kwargs):
         self.client_socket.sendall(pickle.dumps(kwargs))
     
-    @gdecorator.SendDecorator()
+    #@gdecorator.SendDecorator()
     def sendPosition(self, position):
         data = pickle.dumps(position)
         self.client_socket.sendall(data)
 
-    @gdecorator.SendDecorator()
+    #@gdecorator.SendDecorator()
     def sendScore(self, score):
         data = pickle.dumps(score)
         self.client_socket.sendall(data)

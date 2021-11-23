@@ -18,7 +18,7 @@ class AcceptThread(threading.Thread):
 class ReceiveThread(threading.Thread):
     def __init__(self, intent, daemon=True) -> None:
         super().__init__()
-        import gnetwork.gserver
+        import gnetwork.gserver as gserver
         self.intent: gserver.GServer = intent
 
     def run(self) -> None:

@@ -4,6 +4,17 @@ import time
 from tkinter import *
 from Setting import *
 from Class import *
+import os
+
+print(os.path.dirname(''))
+
+if __name__ == '__main__':
+    import sys
+    mypath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    print(mypath)
+    if not mypath in sys.path: sys.path.append(mypath)
+
+from gnetwork import gclient
 
 class Game:
     def __init__(self):
@@ -12,21 +23,25 @@ class Game:
         pg.display.set_caption('Game Title')
         self.clock = pg.time.Clock()
         self.running = True
-        self.bgmusic = pg.mixer.Sound("resources\\bgmusic.mp3")
+        self.bgmusic = pg.mixer.Sound("../resources/bgmusic.mp3")
         self.online = False
         self.bgmusic.play(-1)
+
+        self.client = gclient.GClient()
+        self.client.connect()
+
     #게임을 시작할 때 필요한 것들
     def new(self):
         self.score1 = 0
         self.score2 = 0
-        self.coinsound = pg.mixer.Sound("resources\coinGet.mp3")
-        self.hitsound = pg.mixer.Sound("resources\hit.mp3")
+        self.coinsound = pg.mixer.Sound("../resources/coinGet.mp3")
+        self.hitsound = pg.mixer.Sound("../resources/hit.mp3")
         self.allSprite = pg.sprite.Group()
         self.playerSprite = pg.sprite.Group()
         self.coinSprite = pg.sprite.Group()
         self.rockSprite = pg.sprite.Group()
-        self.player1 = Player(self, 'resources\Player1.png', SCREEN_WIDTH/20, SCREEN_HEIGHT/2)
-        self.player2 = Player(self, 'resources\Player2.png', SCREEN_WIDTH/20*19, SCREEN_HEIGHT/2)
+        self.player1 = Player(self, '../resources/Player1.png', SCREEN_WIDTH/20, SCREEN_HEIGHT/2)
+        self.player2 = Player(self, '../resources/Player2.png', SCREEN_WIDTH/20*19, SCREEN_HEIGHT/2)
         #스프라이트 그룹 형성
         for i in range(COIN_COUNT):
             self.coin = Coin()
@@ -47,6 +62,7 @@ class Game:
         while self.playing:
             self.clock.tick(60)
             self.events()
+            self.client.sendPosition(self.player1.rect)
             self.update()
             self.draw()
     #키 이벤트
@@ -180,7 +196,7 @@ class Game:
     #시작화면 출력
     def showStartScreen(self):
         self.screen.fill(BLACK)
-        self.drawBg("resources\\background.jpg")
+        self.drawBg("../resources/background.jpg")
         self.drawText("Game Title", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6)
         self.drawText("Press 'spacebar' to play", 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/6*5)
         pg.display.flip()
@@ -188,8 +204,8 @@ class Game:
     #로컬 멀티 / 온라인 확인 화면 출력
     def showCheckScreen(self):
         self.screen.fill(BLACK)
-        self.drawImage("resources\Online.png", (300,300), SCREEN_WIDTH/4, SCREEN_HEIGHT/4)
-        self.drawImage("resources\Local.png", (300,300), SCREEN_WIDTH/4*3, SCREEN_HEIGHT/4)
+        self.drawImage("../resources/Online.png", (300,300), SCREEN_WIDTH/4, SCREEN_HEIGHT/4)
+        self.drawImage("../resources/Local.png", (300,300), SCREEN_WIDTH/4*3, SCREEN_HEIGHT/4)
         self.drawText("Online 2p play press 'y'", 30, WHITE, SCREEN_WIDTH/4, SCREEN_HEIGHT/6*5)
         self.drawText("Local 2p play press 'n'", 30, WHITE, SCREEN_WIDTH/4*3, SCREEN_HEIGHT/6*5)
         pg.display.flip()
@@ -240,7 +256,7 @@ class Game:
         self.screen.blit(background, backgroundRect)
     #텍스트 출력
     def drawText(self, text, size, color, x, y):
-        font = pg.font.Font("resources\\andante.ttf", size)
+        font = pg.font.Font("../resources/andante.ttf", size)
         textSurface = font.render(text, True, color)
         textRect = textSurface.get_rect()
         textRect.midtop = (x, y)

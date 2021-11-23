@@ -29,7 +29,7 @@ class Player(pg.sprite.Sprite):
 class Coin(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load('resources\coin.png')
+        self.image = pg.image.load('../resources/coin.png')
         self.image = pg.transform.scale(self.image,(50,50))
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(SCREEN_WIDTH/5, SCREEN_WIDTH/5*4)
@@ -42,7 +42,7 @@ class Items(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         pg.sprite.Sprite.__init__(self)
         self.game = game
-        self.image = pg.image.load('resources\\rock.png')
+        self.image = pg.image.load('../resources/rock.png')
         self.image = pg.transform.scale(self.image,(75,75))
         self.rect = self.image.get_rect()
         self.dx = random.randrange(-2, 2)
