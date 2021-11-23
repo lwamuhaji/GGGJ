@@ -16,7 +16,9 @@ class Player(pg.sprite.Sprite):
         self.rect.midtop = (x, y)
         
      # 좌표 이동
-    def move(self):
+    def move(self, position=None):
+        if position != None:
+            self.rect = position
         self.rect.x += self.dx
         self.rect.y += self.dy
         
