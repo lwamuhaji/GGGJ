@@ -1,4 +1,3 @@
-
 # 게임 화면 크기
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 960

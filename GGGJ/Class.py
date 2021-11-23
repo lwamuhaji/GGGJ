@@ -1,12 +1,13 @@
 import pygame as pg
 import random
+import os
 from Setting import *
-from tkinter import *
 
 #Player class 생성
 class Player(pg.sprite.Sprite):
     def __init__(self, game, link, x, y, dx=0, dy=0):
         pg.sprite.Sprite.__init__(self)
+        self.path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.game = game
         self.image = pg.image.load(link)
         self.image = pg.transform.scale(self.image,(100,100))
@@ -29,7 +30,8 @@ class Player(pg.sprite.Sprite):
 class Coin(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load('resources\coin.png')
+        self.path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.image = pg.image.load(self.path + '\\resources\\coin.png')
         self.image = pg.transform.scale(self.image,(50,50))
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(SCREEN_WIDTH/5, SCREEN_WIDTH/5*4)
@@ -40,9 +42,9 @@ class Coin(pg.sprite.Sprite):
 class Items(pg.sprite.Sprite):
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
-        pg.sprite.Sprite.__init__(self)
+        self.path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.game = game
-        self.image = pg.image.load('resources\\rock.png')
+        self.image = pg.image.load(self.path + '\\resources\\rock.png')
         self.image = pg.transform.scale(self.image,(75,75))
         self.rect = self.image.get_rect()
         self.dx = random.randrange(-2, 2)
