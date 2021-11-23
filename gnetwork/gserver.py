@@ -1,7 +1,7 @@
 import socket
 import pickle
-from . import gthread
-from . import gdecorator
+import gnetwork.gthread as gthread
+import gnetwork.gdecorator as gdecorator
 
 class GServer:
 
@@ -29,4 +29,14 @@ class GServer:
     @gdecorator.SendDecorator()
     def send(self, **kwargs):
         data = pickle.dumps(kwargs)
+        self.client_socket.sendall(data)
+
+    @gdecorator.SendDecorator()
+    def sendPosition(self, position):
+        data = pickle.dumps(position)
+        self.client_socket.sendall(data)
+
+    @gdecorator.SendDecorator()
+    def sendScore(self, score):
+        data = pickle.dumps(score)
         self.client_socket.sendall(data)

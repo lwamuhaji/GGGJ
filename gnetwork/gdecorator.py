@@ -1,4 +1,5 @@
 from typing import Callable
+import pickle
 
 class AcceptDecorator:
     def __call__(self, func) -> Callable[..., None]:
@@ -27,8 +28,7 @@ class ConnectDecorator:
 class ReceiveDecorator:
     def __call__(self, func) -> Callable[..., None]:
         def wrapper(*args, **kwargs) -> bytes:
-            print('Start receiving')
-            data = func(args[0])
-            print('Received', data)
+            data = pickle.loads(func(args[0]))
+            print('Received:', data)
             return data
         return wrapper

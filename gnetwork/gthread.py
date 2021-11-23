@@ -1,6 +1,6 @@
 import threading
 import pickle
-from . import gdecorator
+import gnetwork.gdecorator as gdecorator
 
 class AcceptThread(threading.Thread):
     def __init__(self, server) -> None:
@@ -18,23 +18,19 @@ class AcceptThread(threading.Thread):
 class ReceiveThread(threading.Thread):
     def __init__(self, intent, daemon=True) -> None:
         super().__init__()
-        from . import gserver
+        import gnetwork.gserver
         self.intent: gserver.GServer = intent
 
     def run(self) -> None:
         print('Receive thread started')
         while True:
-            d: bytes = self.intent.client_socket.recv(self.intent.buffer_size)
-            print(pickle.loads(d))
-            #self.receive()
+            data = self.receive()
 
-    #@gdecorator.ReceiveDecorator()
+    @gdecorator.ReceiveDecorator()
     def receive(self) -> bytes:
-        d = self.intent.client_socket.recv(self.intent.buffer_size)
-        print(d)
-        return d
+        return self.intent.client_socket.recv(self.intent.buffer_size)
 
-    def __handleData(self, data: bytes):
+    def handleData(self, data: bytes):
         data_dict: dict = pickle.loads(data)
         print(data_dict)
         
