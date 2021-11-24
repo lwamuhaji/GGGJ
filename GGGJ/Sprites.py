@@ -16,11 +16,11 @@ class Player(pg.sprite.Sprite):
         self.dy = dy
         self.rect.midtop = (x, y)
         
-     # 좌표 이동
+     #플레이어 좌표 이동
     def move(self):
         self.rect.x += self.dx
         self.rect.y += self.dy
-        
+        #스크린 밖으로 안나가도록  설정
         if self.rect.right > SCREEN_WIDTH or self.rect.x < 0:
             self.rect.x -= self.dx
         if self.rect.bottom > SCREEN_HEIGHT or self.rect.y < 0:
@@ -34,8 +34,8 @@ class Coin(pg.sprite.Sprite):
         self.image = pg.image.load(self.path + '\\resources\\coin.png')
         self.image = pg.transform.scale(self.image,(50,50))
         self.rect = self.image.get_rect()
-        self.rect.x = random.randrange(SCREEN_WIDTH/5, SCREEN_WIDTH/5*4)
-        self.rect.y = random.randrange(SCREEN_HEIGHT/5, SCREEN_HEIGHT/5*4)
+        self.rect.x = random.randrange(SCREEN_WIDTH/5, SCREEN_WIDTH/5*4)    #coin x좌표 랜덤 설정
+        self.rect.y = random.randrange(SCREEN_HEIGHT/5, SCREEN_HEIGHT/5*4)  #coin y좌표 랜덤 설정
         
 
 #Items class 생성
@@ -47,10 +47,11 @@ class Items(pg.sprite.Sprite):
         self.image = pg.image.load(self.path + '\\resources\\rock.png')
         self.image = pg.transform.scale(self.image,(75,75))
         self.rect = self.image.get_rect()
-        self.dx = random.randrange(-2, 2)
-        self.dy = random.randrange(3, 7)
-        self.rect.x = random.randrange(SCREEN_WIDTH/5, SCREEN_WIDTH/5*4)
-        self.rect.y = random.randrange(-150, -50)
+        self.dx = random.randrange(-2, 2)   #운석 x좌표 속도 랜덤 설정
+        self.dy = random.randrange(3, 7)    #운석 y좌표 속도 랜덤 설정
+        self.rect.x = random.randrange(SCREEN_WIDTH/5, SCREEN_WIDTH/5*4)    #운석 x좌표 랜덤 설정
+        self.rect.y = random.randrange(-150, -50)                           #운석 y좌표 랜덤 설정
+    
     
     def moveRock(self):
         self.rect.x += self.dx
