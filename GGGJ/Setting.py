@@ -16,4 +16,4 @@ PLAYER_COUNT = 2
 SPEED1 = 5
 SPEED2 = 5
 isActive = True
-total_time = 5
+total_time = 50

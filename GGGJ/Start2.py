@@ -13,17 +13,17 @@ if __name__ == '__main__':
     mypath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     if not mypath in sys.path: sys.path.append(mypath)
 
-from gnetwork.gclient import GClient
+from gnetwork.gserver import GServer
 
-client = GClient()
-client.connect()
+server = GServer()
+server.start()
 
 class Game:
     def __init__(self):
         pg.init()
         self.path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pg.display.set_caption('Client')
+        pg.display.set_caption('Server')
         self.clock = pg.time.Clock()
         self.running = True
         self.bgmusic = pg.mixer.Sound(self.path + '\\resources\\bgmusic.mp3')
@@ -54,11 +54,10 @@ class Game:
         self.allSprite.add(self.player1, self.player2)
         self.playerSprite.add(self.player1, self.player2)
 
-        client.send(control='start')
-        data = client.receive()
+        server.receive()
+        server.send(control='start')
         self.startCountdown()
         self.run()
-        
     #게임 실행 부분 코드
     def run(self):
         self.playing = True
@@ -68,8 +67,9 @@ class Game:
             self.update()
             self.draw()
 
-            client.send(pos=self.player1.rect)
-            self.player2.rect = pickle.loads(client.receive())['pos']
+
+            server.send(pos=self.player2.rect)
+            self.player1.rect = pickle.loads(server.receive())['pos']
             
     #키 이벤트
     def events(self):
@@ -114,7 +114,6 @@ class Game:
                     self.player2.dy = 0
                 if event.key == pg.K_UP:
                     self.player2.dy = 0
-                    
     #매 프레임 갱신해야하는 것들    
     def update(self):
         self.allSprite.update()
@@ -150,7 +149,6 @@ class Game:
             rock = Items(self)
             self.allSprite.add(rock)
             self.rockSprite.add(rock)
-            
     #화면에 출력    
     def draw(self):
         self.screen.fill(BLACK)
@@ -158,14 +156,12 @@ class Game:
         self.timer()
         self.drawScore()
         pg.display.flip()
-        
     #타이머
     def timer(self):
         elapsed_time = (pg.time.get_ticks() - self.time) / 1000   
         self.drawText("time: " + str(int(total_time - elapsed_time)), 30, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/12)
         if total_time - elapsed_time <= 0:
             self.playing = False
-            
     #시작화면과 결과창에서 키입력 감지
     def wait_for_key(self):
         waiting = True
