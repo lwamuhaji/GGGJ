@@ -25,14 +25,3 @@ client.connect()
 ```python
 client.send(data=data)
 ```
-
-### data format 
-- 움직임
-```python
-client.send(header='movement', position=rect: Rect)
-```
-
-- 점수
-```python
-client.send(header='score', score=score: int)
-```
