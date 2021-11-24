@@ -15,6 +15,9 @@ class GClient:
     def startRecvThread(self):
         gthread.ReceiveThread(self).start()
 
+    def receive(self):
+        return self.client_socket.recv(self.buffer_size)
+
     @gdecorator.ConnectDecorator()
     def connect(self):
         self.client_socket.bind((self.SRC_ADDRESS, self.SRC_PORT))

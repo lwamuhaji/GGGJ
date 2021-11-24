@@ -3,6 +3,8 @@ import random
 import os
 from Setting import *
 
+random.seed(1)
+
 #Player class 생성
 class Player(pg.sprite.Sprite):
     def __init__(self, game, link, x, y, dx=0, dy=0):

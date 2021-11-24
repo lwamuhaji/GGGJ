@@ -22,6 +22,9 @@ class GServer:
     def startRecvThread(self):
         gthread.ReceiveThread(self).start()
 
+    def receive(self):
+        return self.client_socket.recv(self.buffer_size)
+
     @gdecorator.AcceptDecorator()
     def accept(self):
         self.client_socket, self.client_address = self.server_socket.accept()
