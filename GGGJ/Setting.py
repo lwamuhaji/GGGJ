@@ -1,4 +1,3 @@
-
 # 게임 화면 크기
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 960
@@ -17,4 +16,4 @@ PLAYER_COUNT = 2
 SPEED1 = 5
 SPEED2 = 5
 isActive = True
-total_time = 5
+total_time = 50

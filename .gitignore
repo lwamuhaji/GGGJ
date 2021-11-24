@@ -3,10 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# dataset
-MS_Classification/dataset/test/Incremental_Coordinate/
-MS_Classification/dataset/train/Incremental_Coordinate/
-MS_Classification/dataset/valid/Incremental_Coordinate/
+# VSCODE
+.vs/
+.vscode/
 
 # C extensions
 *.so

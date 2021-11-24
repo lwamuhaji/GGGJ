@@ -1,15 +1,8 @@
-import socket
 from gclient import GClient
-import sys
 
 client = GClient()
-if client.connect() == 0:
-    while True:
-        text = input('> ')
+client.connect()
+client.startRecvThread()
 
-        if text == 'quit':
-            sys.exit()
-            client.clientSock.shutdown(socket.SHUT_WR)
-            client.close()
-            break
-        client.send(text=text)
+while True:
+    client.send(text=input('>'))
